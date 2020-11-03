@@ -1,5 +1,6 @@
 # GPU-accelerated Mandelbrot set generator
 A CUDA and OpenCV-based program which generates a visual representation of Mandelbrot set.
+![Mandelbrot set](docs/mandelbrot_cover.jpg)
 
 ## How to use it?
 The whole execution process is defined by macros.
