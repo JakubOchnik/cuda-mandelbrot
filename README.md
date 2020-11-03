@@ -2,8 +2,8 @@
 A CUDA and OpenCV-based program which generates a visual representation of Mandelbrot set.
 
 ## How to use it?
-In order to modify program parameters, you need to modify the ```params.h``` file.
-Whole program execution process is defined by macros.
+The whole execution process is defined by macros.
+In order to modify program parameters, you only need to modify the ```params.h``` file.
 ```
 WIDTH			- width of the output image
 HEIGHT			- height of the output image
@@ -25,9 +25,9 @@ COUNT_TIME		- CPU variant timer
 ```
 
 ## Performance comparison
-Program contains not only a parallel implementation, but also a regular, iterative one.
-All tests were performed on an Intel i7-7700HQ @ 2.80Ghz CPU and Nvidia GTX 1050 GPU.
-Program was set to check and generate a 3840x2160 resolution map.
+The program contains not only a parallel implementation, but also a regular one for comparison.
+All the tests were performed on an Intel i7-7700HQ @ 2.80Ghz CPU and Nvidia GTX 1050 GPU.
+Below, I listed execution times in seconds for selected values of iterations and 3840x2160 map:
 
 | Iterations | GPU     | CPU     |
 |------------|---------|---------|
@@ -36,6 +36,6 @@ Program was set to check and generate a 3840x2160 resolution map.
 | 1024       | 107.720 | 274.259 |
 | 2048       | 212.058 | 538.790 |
 
-*The GPU seems to heavily outperform CPU for every number of iterations*
+*The GPU seems to heavily outperform CPU for any number of iterations*
 
 ## More to come!
