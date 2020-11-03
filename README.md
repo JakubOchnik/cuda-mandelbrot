@@ -35,6 +35,7 @@ Program was set to check and generate a 3840x2160 resolution map.
 | 512        | 55.258  | 129.820 |
 | 1024       | 107.720 | 274.259 |
 | 2048       | 212.058 | 538.790 |
+
 *The GPU seems to heavily outperform CPU for every number of iterations*
 
 ## More to come!
