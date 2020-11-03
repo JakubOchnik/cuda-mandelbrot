@@ -1,0 +1,8 @@
+.vs/
+cuda_mandelbrot.sln
+cuda_mandelbrot.vcxproj
+cuda_mandelbrot.vcxproj.user
+x64/
+cuda_mandelbrot.vcxproj.filters
+mandelbrot_4k.jpg
+New folder/
