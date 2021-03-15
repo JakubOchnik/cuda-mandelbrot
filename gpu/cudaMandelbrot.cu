@@ -38,7 +38,7 @@ public:
     }
 };
 
-__device__ int checkIter(int x, int y) {
+__device__ int checkIter(int x, int y, const bool color) {
     double s_x = x_min + x / (WIDTH -1.0) * (x_max - x_min);
     double s_y = y_min + y / (HEIGHT -1.0) * (y_max - y_min);
     gpu_complex num;
@@ -49,28 +49,26 @@ __device__ int checkIter(int x, int y) {
             break;
         num = num * num + C;
     }
-#ifdef MONOCHROME
-    if (i > 255)
-        return 255;
-#else
-    if (i >= ITERATIONS)
-        return ITERATIONS;
-#endif
-    else
-        return (unsigned char)i;
+    if (!color) {
+        if (i > 255)
+            return 255;
+        else
+            return (unsigned char)i;
+    }
+    else {
+        if (i >= ITERATIONS)
+            return ITERATIONS;
+        else
+            return (unsigned char)i;
+    }
 }
 
 __global__ void calculate(unsigned char* img)
 {
     int x = blockIdx.x;
     int y = blockIdx.y;
-#ifdef MONOCHROME
-    int tid = x + y * gridDim.x;
-    
-    img[tid] = checkIter(x, y);
-#else
     int tid = (x + y * gridDim.x) * 3;
-    int val = checkIter(x, y);
+    int val = checkIter(x, y, 1);
     float ratio = (float)val * 1.0f / (float)ITERATIONS;
     unsigned char r, g, b;
     r = r_1 + ratio * (r_2 - r_1);
@@ -79,26 +77,38 @@ __global__ void calculate(unsigned char* img)
     img[tid] = b;//r_1 + val / 255.0 * (r_2 - r_1);
     img[tid + 1] = g;// g_1 + val / 255.0 * (g_2 - g_1);
     img[tid + 2] = r;//b_1 + val / 255.0 * (b_2 - b_1);
-#endif
+}
+
+__global__ void calculate_mono(unsigned char* img)
+{
+    int x = blockIdx.x;
+    int y = blockIdx.y;
+    int tid = x + y * gridDim.x;
+
+    img[tid] = checkIter(x, y, 0);
 }
 
 void calculateMandelbrot(unsigned char* image) {
     dim3 blocksPerGrid(WIDTH, HEIGHT);
     unsigned char* dev_out;
-#ifdef MONOCHROME
-    cudaMalloc(&dev_out, WIDTH*HEIGHT*sizeof(unsigned char));
-    cudaMemcpy(dev_out, image, WIDTH * HEIGHT*sizeof(unsigned char), cudaMemcpyHostToDevice);
-#else
-    cudaMalloc(&dev_out, 3 * WIDTH * HEIGHT * sizeof(unsigned char));
-    cudaMemcpy(dev_out, image, 3*WIDTH * HEIGHT * sizeof(unsigned char), cudaMemcpyHostToDevice);
-#endif
-    auto start = std::chrono::high_resolution_clock::now();
-    calculate<<<blocksPerGrid,1>>>(dev_out);
-#ifdef MONOCHROME
-    cudaMemcpy(image, dev_out, WIDTH * HEIGHT*sizeof(unsigned char), cudaMemcpyDeviceToHost);
-#else
-    cudaMemcpy(image, dev_out, 3* WIDTH * HEIGHT * sizeof(unsigned char), cudaMemcpyDeviceToHost);
-#endif
+    std::chrono::steady_clock::time_point start;
+    size_t memSize;
+    if (!color) 
+        memSize = WIDTH * HEIGHT * sizeof(unsigned char);
+    else 
+        memSize = 3 * WIDTH * HEIGHT * sizeof(unsigned char);
+
+    cudaMalloc(&dev_out, memSize);
+    cudaMemcpy(dev_out, image, memSize, cudaMemcpyHostToDevice);
+    start = std::chrono::high_resolution_clock::now();
+    if (!color) {
+        calculate_mono << <blocksPerGrid, 1 >> > (dev_out);
+    }
+    else {
+        calculate << <blocksPerGrid, 1 >> > (dev_out);
+    }
+    cudaMemcpy(image, dev_out, memSize, cudaMemcpyDeviceToHost);
+
     auto finish = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = finish - start;
     std::cout << "Elapsed time: " << elapsed.count() << " s\n";

@@ -15,15 +15,18 @@ void calculateMandelbrotCPU(unsigned char* img) {
 					break;
 				num = num * num + C;
 			}
-#ifdef MONOCHROME
-			if (k > 255)
-				img[id] = 255;
-#else
-			if (i >= ITERATIONS)
-				return ITERATIONS;
-#endif
-			else
-				img[id] = (unsigned char)k;
+			if (!color) {
+				if (k > 255)
+					img[id] = 255;
+				else
+					img[id] = (unsigned char)k;
+			}
+			else {
+				if (i >= ITERATIONS)
+					img[id] =  ITERATIONS;
+				else
+					img[id] = (unsigned char)k;
+			}
 		}
 	}
 }

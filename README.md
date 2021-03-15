@@ -4,8 +4,8 @@ A CUDA and OpenCV-based program which generates a visual representation of Mande
 ![Mandelbrot set](docs/mandelbrot_cover.jpg)
 
 ## How to use it?
-The whole execution process is defined by macros.
-In order to modify program parameters, you only need to modify the ```params.h``` file.
+The whole execution process is defined by constants.
+In order to modify parameters of the program, you only need to modify the ```params.h``` file.
 ```
 WIDTH			- width of the output image
 HEIGHT			- height of the output image
@@ -15,15 +15,14 @@ x_max			- x range of the coordinate system (default: 1.0)
 y_min			- y range of the coordinate system (default: -1.0)
 y_max			- y range of the coordinate system (default: 1.0)
 
-ITERATIONS		- number of loop iterations (more iterations = more details)
+ITERATIONS		- number of loop iterations 
+				- (more iterations = more details)
 
 r_1 ... b_2		- RGB color codes used for RGB variant
 
-MONOCHROME/RGB	- type of output image
-
-GPU/CPU			- type of function
-
-COUNT_TIME		- CPU variant timer
+bool color		- type of the output image (RGB/MONO)
+bool useGPU     - GPU or CPU program variant 
+bool exportFile - saving image as a .png file
 ```
 
 ## Performance comparison
